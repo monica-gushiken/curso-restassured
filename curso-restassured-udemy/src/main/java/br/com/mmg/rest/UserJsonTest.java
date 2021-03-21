@@ -1,9 +1,7 @@
 package br.com.mmg.rest;
 
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.greaterThan;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -43,6 +41,7 @@ public class UserJsonTest {
 		int id = JsonPath.from(response.asString()).getInt("id");
 		Assert.assertEquals(1, id);
 	}
+	
 	@Test
 	public void deveVerificarSegundoNivel(){
 		given()
@@ -53,5 +52,23 @@ public class UserJsonTest {
 			.body("id",is(2))
 			.body("name", containsString("Joaquina"))
 			.body("endereco.rua", is("Rua dos bobos"));
+	}
+	
+	@Test
+	public void deveVerificarLista() {
+		given()
+		.when()
+			.get("http://restapi.wcaquino.me/users/3")
+		.then()
+			.statusCode(200)
+			.body("name", containsString("Ana"))
+			.body("filhos", hasSize(2))
+			.body("filhos.name[0]", is("Zezinho"))
+			.body("filhos.name[1]", is("Luizinho"))
+			.body("filhos.name", hasSize(2))
+			.body("filhos.name", hasItem("Luizinho"))
+			.body("filhos.name", hasItems("Luizinho","Zezinho"))
+			
+			;
 	}
 }
